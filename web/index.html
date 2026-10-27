@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="把一批新案快速配給最適合的買方。台灣房仲工作流的免費配對入口。">
+  <title>房仲自動化神器｜新案配給最適合的買方</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="房仲自動化神器首頁">rea-kit<span>／房仲工作流</span></a>
+    <nav aria-label="主要導覽">
+      <a href="#demo">免費配對</a>
+      <a href="#how">怎麼運作</a>
+      <a href="#boundary">資料邊界</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">給台灣房仲的第一個工作流入口</p>
+        <h1 id="hero-title">新案一進來，<em>先知道該給誰。</em></h1>
+        <p class="lede">上傳一批物件，填一張買方需求卡。系統會先用硬條件篩選，再把候選案與淘汰原因說清楚。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="#demo" data-event="plugin_open">免費試配一批物件 <span>↓</span></a>
+          <a class="text-link" href="#how">看 3 步驟怎麼做</a>
+        </div>
+        <p class="microcopy">瀏覽器內處理合成範例；你選擇的 CSV 不會被這個 demo 上傳。</p>
+        <p class="offer-line"><strong>免費 100 次配對</strong><span>＋</span><strong>7 天區域監測</strong><small>不用先辦 LINE</small></p>
+      </div>
+      <div class="hero-note" aria-label="產品承諾">
+        <span class="note-mark">01</span>
+        <p>不是替你亂猜哪間房好，而是把「為什麼適合／為什麼淘汰」整理成可審核清單。</p>
+        <small>第一版基於你提供的資料，沒有假裝即時查詢。</small>
+      </div>
+    </section>
+
+    <section id="demo" class="demo-section" aria-labelledby="demo-title">
+      <div class="section-heading">
+        <p class="eyebrow">免費配對入口</p>
+        <h2 id="demo-title">先用一個買方，試一批新案。</h2>
+        <p>可以載入合成範例，也可以選擇自己的 CSV 在本機瀏覽器試算。</p>
+      </div>
+      <div class="demo-grid">
+        <form id="need-form" class="panel need-form">
+          <div class="panel-top"><span>買方需求卡</span><span class="status-dot">草稿</span></div>
+          <label>區域<input name="area" value="中央區" required></label>
+          <label>最高總價（萬）<input name="budget" type="number" value="1200" min="0" required></label>
+          <label>最少房數<input name="rooms" type="number" value="2" min="0" required></label>
+          <label>物件類型
+            <select name="property_type"><option value="apartment">公寓/大樓</option><option value="townhouse">透天</option></select>
+          </label>
+          <div class="form-actions">
+            <button class="button primary" type="submit" data-event="first_result">開始配對</button>
+            <button class="button secondary" type="button" id="load-sample" data-event="sample_imported">載入合成範例</button>
+          </div>
+          <label class="file-input">或選擇自己的 CSV<input id="csv-file" type="file" accept=".csv,text/csv"></label>
+          <p class="form-hint">必要欄位：id、transaction、area、price、property_type、rooms、url、listed_at</p>
+        </form>
+
+        <section class="panel result-panel" aria-live="polite" aria-labelledby="result-title">
+          <div class="panel-top"><span id="result-title">配對結果</span><span id="result-count" class="result-count">尚未執行</span></div>
+          <div id="result-empty" class="result-empty"><span class="empty-number">—</span><p>填好左側需求，結果會出現在這裡。</p></div>
+          <div id="result-content" class="hidden">
+            <div class="result-summary"><strong id="priority-count">0</strong><span>筆優先審核</span><strong id="review-count">0</strong><span>筆待補資料</span></div>
+            <div id="result-list" class="result-list"></div>
+            <button class="share-button" type="button" id="share-result" data-event="share_clicked">複製這份結果摘要</button>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="how" class="steps-section" aria-labelledby="how-title">
+      <div class="section-heading"><p class="eyebrow">從一次試用開始</p><h2 id="how-title">三步驟，先得到一個真的答案。</h2></div>
+      <ol class="steps">
+        <li><span>01</span><h3>整理需求</h3><p>把區域、預算、房數和不能妥協的條件寫成可審核客需卡。</p></li>
+        <li><span>02</span><h3>篩選新案</h3><p>新案先經過硬條件與資料完整度檢查，不符合的案子會說明原因。</p></li>
+        <li><span>03</span><h3>開啟監測</h3><p>確認結果有用，再升級成指定區域的新案與價格變更監測。</p></li>
+      </ol>
+    </section>
+
+    <section id="boundary" class="boundary-section" aria-labelledby="boundary-title">
+      <div><p class="eyebrow">透明的資料邊界</p><h2 id="boundary-title">先把能證明的做好。</h2></div>
+      <div class="boundary-copy"><p>這個 demo 只分析你提供的資料。即時公開資料、地址定位、正式謄本、CRM、LINE 與推播，會由獨立的授權工具處理。</p><p class="boundary-list">不捏造查詢結果　·　不偷讀私人對話　·　不自動聯絡客戶　·　缺資料就標示缺件</p></div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>rea-kit／房仲自動化神器</span><span>先配對，再自動化。</span></footer>
+  <div class="site-footer-ad"><p class="custom-ad">需要改成你們公司的版本、幫忙安裝或串接？加 LINE 官方帳號 <a href="https://line.me/R/ti/p/@812ibtir" target="_blank" rel="noopener">@812ibtir</a>（留白事務所・林其衞），原則上 1～2 個工作天回覆報價。</p></div>
+  <script src="app.js" defer></script>
+</body>
+</html>

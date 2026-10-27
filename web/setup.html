@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>房仲自動化神器｜一鍵串接精靈</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1d2430;--mute:#5b6676;--line:#e3e7ee;--brand:#0b7a5a;--brand2:#e8f5f0;--bad:#b42318;--badbg:#fdecea;--warn:#8a5a00;--warnbg:#fff6e0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.65 "Noto Sans TC","Microsoft JhengHei","PingFang TC",system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:22px;margin:4px 0 2px}
+.sub{color:var(--mute);margin:0 0 16px}
+.rent{background:#fff;border:2px solid var(--brand);border-radius:12px;padding:12px 16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:18px}
+.rent b{color:var(--brand)}
+.rent a{margin-left:auto}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+nav button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:6px 14px;cursor:pointer;font:inherit}
+nav button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+nav .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#c4cad4;margin-right:6px;vertical-align:middle}
+nav .dot.ok{background:#22a06b}
+section{display:none}
+section.on{display:block}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px}
+.card h2{font-size:18px;margin:0 0 6px}
+.card h3{font-size:16px;margin:0 0 6px;display:flex;align-items:center;gap:8px}
+.num{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--brand2);color:var(--brand);font-weight:700;align-items:center;justify-content:center;font-size:13px;flex:none}
+.done .num{background:#22a06b;color:#fff}
+ol,ul{padding-left:22px;margin:6px 0}
+li{margin:3px 0}
+.path{background:#f0f2f5;border-radius:6px;padding:1px 6px;font-weight:600;white-space:nowrap}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input,select{width:100%;padding:9px 11px;border:1px solid #c9d0da;border-radius:8px;font:inherit;background:#fff}
+input:focus,select:focus{outline:2px solid var(--brand);border-color:var(--brand)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row>*{flex:1 1 220px}
+.btn{display:inline-block;margin-top:12px;background:var(--brand);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.btn.ghost{background:#fff;color:var(--brand);border:1px solid var(--brand)}
+.btn.danger{background:#fff;color:var(--bad);border:1px solid #e5b5b0}
+.btn:disabled{opacity:.55;cursor:wait}
+.res{margin-top:12px;border-radius:8px;padding:10px 12px;display:none}
+.res.ok{display:block;background:#e7f6ee;color:#0f5132}
+.res.bad{display:block;background:var(--badbg);color:var(--bad)}
+.res.info{display:block;background:var(--warnbg);color:var(--warn)}
+.saved{color:#0f5132;font-weight:600}
+.note{background:var(--warnbg);color:var(--warn);border-radius:8px;padding:8px 12px;margin:8px 0}
+.code{font-size:30px;letter-spacing:6px;font-weight:700;color:var(--brand)}
+.counties{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:4px}
+.counties label{font-weight:400;margin:0;display:flex;gap:6px;align-items:center}
+.counties input{width:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border-bottom:1px solid var(--line);padding:6px;text-align:left}
+.tablebox{overflow-x:auto}
+small{color:var(--mute)}
+a{color:var(--brand)}
+footer{color:var(--mute);font-size:13px;margin-top:30px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>一鍵串接精靈</h1>
+  <p class="sub">照著每一步點、複製、貼上就好，不用改任何設定檔。金鑰只存在這台電腦，存好之後畫面不會再顯示。</p>
+
+  <div class="rent">
+    <div>🖥️ <b>不想自己架主機、顧網路？</b> 跟我們租主機：LINE、網址、備份我們幫你弄好，你只要用手機。</div>
+    <a class="btn ghost" id="rentLink" href="https://lin.ee/pdYGARu" target="_blank" rel="noopener">LINE 問租主機</a>
+  </div>
+
+  <div class="card" id="health" hidden style="border-color:#e5b5b0;background:var(--badbg)">
+    <h2 style="color:var(--bad)">⚠️ 有串接出問題了</h2>
+    <div id="health-list"></div>
+  </div>
+
+  <nav id="tabs">
+    <button data-t="line" class="on"><span class="dot" id="d-line"></span>LINE 官方帳號</button>
+    <button data-t="search"><span class="dot" id="d-search"></span>591／樂屋新物件</button>
+    <button data-t="gsheet"><span class="dot" id="d-gsheet"></span>Google 試算表</button>
+    <button data-t="lvr"><span class="dot" id="d-lvr"></span>實價登錄</button>
+    <button data-t="moi"><span class="dot" id="d-moi"></span>地政平台（選用）</button>
+  </nav>
+
+  <!-- ═══════════ LINE ═══════════ -->
+  <section id="s-line" class="on">
+    <div class="card"><h2>LINE 官方帳號</h2>
+      <p>串好之後，你在 LINE 上就能「新增買方」「新增物件」、收每天的配對與海巡報告。全程大約 15 分鐘。</p>
+      <p class="note">免費方案每月可主動推播 200 則；回覆訊息不算額度。原則上以 LINE 官方公告為準。</p>
+    </div>
+
+    <div class="card" id="c-l1"><h3><span class="num">1</span>建立 LINE 官方帳號（已經有就跳過）</h3>
+      <ol>
+        <li>打開 <a href="https://manager.line.biz/" target="_blank" rel="noopener">LINE Official Account Manager</a>，用你的 LINE 帳號登入。</li>
+        <li>按 <span class="path">建立新帳號</span>，帳號名稱填你自己或店名（客人會看到），類別選「不動產」。</li>
+        <li>方案選 <span class="path">免費</span> 就可以，之後人多再升級。</li>
+      </ol>
+    </div>
+
+    <div class="card" id="c-l2"><h3><span class="num">2</span>打開 Messaging API、關掉自動回應</h3>
+      <ol>
+        <li>在官方帳號後台右上角按 <span class="path">設定</span> → 左邊選 <span class="path">Messaging API</span> → 按 <span class="path">啟用 Messaging API</span>。</li>
+        <li>它會問「服務提供者（Provider）」：第一次就按建立，名稱填你的名字即可；隱私權政策網址可以先空著。</li>
+        <li>左邊選 <span class="path">回應設定</span>：<b>Webhook 打開</b>、<b>自動回應訊息關掉</b>（不然客人會收到兩次回覆）。「聊天」可以留著，方便你自己手動回。</li>
+      </ol>
+      <small>官方說明：<a href="https://developers.line.biz/zh-hant/docs/messaging-api/getting-started/" target="_blank" rel="noopener">Messaging API 入門</a></small>
+    </div>
+
+    <div class="card" id="c-l3"><h3><span class="num">3</span>貼上兩把金鑰</h3>
+      <ol>
+        <li>打開 <a href="https://developers.line.biz/console/" target="_blank" rel="noopener">LINE Developers 主控台</a>（同一個 LINE 帳號登入）→ 點剛剛的 Provider → 點你的官方帳號（Channel）。</li>
+        <li><span class="path">Basic settings</span> 分頁往下找 <b>Channel secret</b>（32 個英數字）→ 按旁邊的複製鈕，貼到下面第一格。</li>
+        <li>切到 <span class="path">Messaging API</span> 分頁，拉到最下面 <b>Channel access token (long-lived)</b> → 按 <span class="path">Issue</span> → 複製那一長串，貼到第二格。</li>
+      </ol>
+      <div class="row">
+        <div><label for="l-secret">Channel secret</label><input id="l-secret" type="password" autocomplete="off" spellcheck="false" placeholder="32 個英數字"></div>
+        <div><label for="l-token">Channel access token</label><input id="l-token" type="password" autocomplete="off" spellcheck="false" placeholder="很長的一串"></div>
+      </div>
+      <div id="l-keys-saved" class="saved" hidden>✓ 金鑰已存在這台電腦（不顯示內容）。要換新的就直接貼上再按一次。</div>
+      <button class="btn" data-act="lineKeys">檢查並儲存</button>
+      <div class="res" id="r-lineKeys"></div>
+    </div>
+
+    <div class="card" id="c-l4"><h3><span class="num">4</span>設定 Webhook（讓 LINE 連到這台電腦）</h3>
+      <p>LINE 要能從網路連進來，所以需要一個 <b>https 開頭的對外網址</b>，指到這台電腦的 <code>http://127.0.0.1:8080</code>。三選一：</p>
+      <ul>
+        <li><b>A. Cloudflare Tunnel（免費、推薦）</b>：照 <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-remote-tunnel/" target="_blank" rel="noopener">Cloudflare 官方教學</a> 建一條通道，服務網址填 <code>http://127.0.0.1:8080</code>，會得到像 <code>https://rea.你的網域.com</code> 的網址。<br><small>只是試用的話，可以先下載 cloudflared 執行 <code>cloudflared tunnel --url http://127.0.0.1:8080</code>，會給一個 trycloudflare.com 的臨時網址；但它每次重開都會變，正式使用請用固定網址。</small></li>
+        <li><b>B. 自己的主機或 VPS</b>：用反向代理（Caddy、Nginx）加 HTTPS，轉到 8080。</li>
+        <li><b>C. 不想弄 → <a href="https://lin.ee/pdYGARu" target="_blank" rel="noopener">跟我們租主機</a></b>，網址我們幫你設好。</li>
+      </ul>
+      <label for="l-base">對外網址（只要網域）</label>
+      <input id="l-base" placeholder="https://rea.example.com" spellcheck="false">
+      <button class="btn" data-act="lineWebhook">自動填進 LINE 並測試連線</button>
+      <div class="res" id="r-lineWebhook"></div>
+      <small>按下去會：① 把 <code>網址/line-shared/webhook</code> 填進 LINE ② 請 LINE 實際打一次測試 ③ 確認「Use webhook」已打開。</small>
+    </div>
+
+    <div class="card" id="c-l5"><h3><span class="num">5</span>用手機綁定你自己為管理員</h3>
+      <ol>
+        <li>按下面的按鈕，畫面會出現 6 碼。</li>
+        <li>用手機加你的官方帳號好友（官方帳號後台首頁有 QR code，或用 LINE 搜尋 ID <span id="l-basic" class="path">@你的ID</span>）。</li>
+        <li>它會傳歡迎卡給你 → 按 <span class="path">同意並開始</span>。</li>
+        <li>再傳：<span class="path">管理員 <span id="l-code-inline">123456</span></span>（10 分鐘內有效）。</li>
+      </ol>
+      <button class="btn" data-act="lineClaim">產生管理員碼</button>
+      <div class="res" id="r-lineClaim"></div>
+    </div>
+
+    <div class="card" id="c-l6"><h3><span class="num">6</span>誰可以用這個官方帳號？</h3>
+      <p>預設只有你邀請的人能用，陌生人加好友不會用掉你的推播與搜尋額度。要加同事：手機打「管理員面板」→「仲介」→「＋ 邀請新成員」，把 6 位數碼給他，他加好友後傳這組數字就開始了（每個人的客人和物件互相看不到）。</p>
+      <label for="l-signup">加入方式</label>
+      <select id="l-signup"><option value="invite">只有我邀請的人（建議）</option><option value="open">任何加好友的人都能按「同意並開始」</option></select>
+      <button class="btn" data-act="lineSignup">儲存</button>
+      <div class="res" id="r-lineSignup"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 591 / 樂屋 ═══════════ -->
+  <section id="s-search">
+    <div class="card"><h2>591／樂屋等平台的新物件、想買房的貼文</h2>
+      <p>591、樂屋等平台的條款<b>禁止爬蟲</b>，所以我們不直接抓網站，而是用「搜尋服務的官方 API」找最近一天新出現的公開頁面，只拿標題、摘要、網址，你點連結回原站看。這也是每天「今日報告」自動海巡的來源。</p>
+      <p>不串也能用：LINE 上的「今日海巡」會給你一鍵開啟的搜尋連結，只是要自己點。</p>
+    </div>
+    <div class="card"><h3><span class="num">1</span>申請搜尋服務 API key（二選一）</h3>
+      <ul>
+        <li><b>Brave Search API</b>：到 <a href="https://api-dashboard.search.brave.com/" target="_blank" rel="noopener">Brave Search API 後台</a> 註冊 → 選免費或入門方案（需綁卡，有每月免費額度）→ <span class="path">API Keys</span> → <span class="path">Add API key</span> → 複製。</li>
+        <li><b>Serper（Google 結果）</b>：到 <a href="https://serper.dev/" target="_blank" rel="noopener">serper.dev</a> 用 Email 註冊（註冊送免費查詢次數）→ 左邊 <span class="path">API Key</span> → 複製。</li>
+      </ul>
+      <small>費用與額度以各服務官網為準。系統預設全站每天最多 200 次查詢，額度用完當天自動停，不會一直扣。</small>
+    </div>
+    <div class="card"><h3><span class="num">2</span>貼上並測試</h3>
+      <div class="row">
+        <div><label for="s-provider">搜尋服務</label><select id="s-provider"><option value="brave">Brave Search API</option><option value="serper">Serper（Google）</option></select></div>
+        <div><label for="s-key">API key</label><input id="s-key" type="password" autocomplete="off" spellcheck="false"></div>
+      </div>
+      <div id="s-saved" class="saved" hidden>✓ 已串接（不顯示金鑰）。</div>
+      <button class="btn" data-act="search">測試並儲存</button>
+      <button class="btn danger" data-clear="search">取消串接</button>
+      <div class="res" id="r-search"></div>
+      <small>測試時會實際查一次「591 最近一週的出售電梯大樓」，用掉 1 次額度。</small>
+    </div>
+  </section>
+
+  <!-- ═══════════ Google Sheet ═══════════ -->
+  <section id="s-gsheet">
+    <div class="card"><h2>Google 試算表（客戶需求、物件清單）</h2>
+      <p>你習慣用試算表記客人需求、自己的物件，就串進來：每天自動同步一次，LINE 上的配對就會用到。只讀不寫，不會改你的表。</p>
+      <p class="note">試算表要開「知道連結的任何人可以檢視」。所以<b>表裡請只放需求條件和代號</b>（例：王先生→A001），不要放電話、身分證、地址——就算放了，系統也不會匯入這些欄位。</p>
+    </div>
+    <div class="card"><h3><span class="num">1</span>照範本建表</h3>
+      <ol>
+        <li>下載範本：<a href="/setup/template/customers.csv">客戶需求範本</a>、<a href="/setup/template/listings.csv">物件範本</a>。</li>
+        <li>到 <a href="https://sheets.new" target="_blank" rel="noopener">Google 試算表</a> 開新表 → <span class="path">檔案</span> → <span class="path">匯入</span> → 上傳範本 → 「取代目前的工作表」。</li>
+        <li>照第一列的欄位填你的資料（範本第二列是假資料，可以刪）。</li>
+        <li>右上角 <span class="path">共用</span> → 一般存取權改成 <span class="path">知道連結的任何人</span>、角色 <span class="path">檢視者</span> → <span class="path">完成</span>。</li>
+        <li>複製瀏覽器網址列整串，貼到下面。</li>
+      </ol>
+    </div>
+    <div class="card"><h3><span class="num">2</span>貼上網址並檢查</h3>
+      <label for="g-customers">客戶需求試算表網址</label>
+      <input id="g-customers" type="password" autocomplete="off" spellcheck="false" placeholder="https://docs.google.com/spreadsheets/d/…/edit">
+      <div id="g-customers-saved" class="saved" hidden>✓ 已串接（網址不顯示）。</div>
+      <button class="btn" data-act="gsheetCustomers">檢查並儲存</button>
+      <button class="btn ghost" data-act="gsheetSyncCustomers">立即同步</button>
+      <div class="res" id="r-gsheetCustomers"></div>
+      <label for="g-listings">物件試算表網址（選填）</label>
+      <input id="g-listings" type="password" autocomplete="off" spellcheck="false" placeholder="https://docs.google.com/spreadsheets/d/…/edit">
+      <div id="g-listings-saved" class="saved" hidden>✓ 已串接（網址不顯示）。</div>
+      <button class="btn" data-act="gsheetListings">檢查並儲存</button>
+      <button class="btn ghost" data-act="gsheetSyncListings">立即同步</button>
+      <div class="res" id="r-gsheetListings"></div>
+      <div><button class="btn danger" data-clear="gsheet">取消試算表串接</button></div>
+      <small>「立即同步」要先完成 LINE 第 5 步（資料會放進管理員的資料夾）。物件表是「目前所有物件」的完整清單：表裡刪掉的物件會當成下架。</small>
+    </div>
+  </section>
+
+  <!-- ═══════════ 實價登錄 ═══════════ -->
+  <section id="s-lvr">
+    <div class="card"><h2>內政部實價登錄（免金鑰、免費）</h2>
+      <p>政府開放資料，不用申請。選你常跑的縣市，系統會下載最近一季的買賣資料，讓你查行政區的成交概況（筆數、單價中位數、最近幾筆）。只做概況，不做估價。</p>
+      <small>資料來源：<a href="https://plvr.land.moi.gov.tw/DownloadOpenData" target="_blank" rel="noopener">內政部不動產交易實價查詢服務網・開放資料</a>（政府資料開放授權條款）。</small>
+    </div>
+    <div class="card"><h3><span class="num">1</span>選縣市並測試</h3>
+      <div class="counties" id="lvr-counties"></div>
+      <button class="btn" data-act="lvr">測試並儲存</button>
+      <div class="res" id="r-lvr"></div>
+    </div>
+    <div class="card"><h3><span class="num">2</span>查行政區成交概況</h3>
+      <div class="row">
+        <div><label for="lq-county">縣市</label><select id="lq-county"></select></div>
+        <div><label for="lq-district">行政區</label><select id="lq-district"><option value="">先選縣市</option></select></div>
+      </div>
+      <button class="btn" data-act="lvrQuery">查詢</button>
+      <div class="res" id="r-lvrQuery"></div>
+      <div class="tablebox" id="lq-table"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 地政平台 ═══════════ -->
+  <section id="s-moi">
+    <div class="card"><h2>內政部地政整合資訊服務共享協作平台（選用、按筆付費）</h2>
+      <p>用地號查官方的<b>土地標示部</b>（面積、使用分區、公告現值等），不含所有權人。每查一筆都會收費（目前約新臺幣 1 元／筆，原則上以平台公告為準），所以預設不開。</p>
+      <p class="note">這裡串的是政府官方 API，用的是你自己申請的金鑰，費用算在你的平台帳戶。系統不代管任何人的自然人憑證，也不會自動調閱謄本。</p>
+    </div>
+    <div class="card"><h3><span class="num">1</span>申請金鑰</h3>
+      <ol>
+        <li>打開 <a href="https://cop.land.moi.gov.tw/" target="_blank" rel="noopener">地政整合資訊服務共享協作平台</a> → 註冊會員（公司行號、事務所或個人），完成 Email 驗證。</li>
+        <li>登入後申請介接服務，選 <span class="path">土地標示部</span>（依地號查詢），使用目的填「不動產經紀業務之物件資料核對」。</li>
+        <li>核准後，到平台的應用程式／金鑰管理頁取得 <b>Client ID</b> 和 <b>安全碼（Secret）</b>，並依平台規定儲值或繳費。</li>
+      </ol>
+      <small>畫面與流程可能調整，詳細步驟見 <code>docs/金鑰申請.md</code>。</small>
+    </div>
+    <div class="card"><h3><span class="num">2</span>貼上並驗證（不會扣錢）</h3>
+      <div class="row">
+        <div><label for="m-id">Client ID</label><input id="m-id" type="password" autocomplete="off" spellcheck="false"></div>
+        <div><label for="m-secret">安全碼（Secret）</label><input id="m-secret" type="password" autocomplete="off" spellcheck="false"></div>
+        <div><label for="m-limit">每天最多查幾筆（防止誤扣）</label><input id="m-limit" inputmode="numeric" value="20"></div>
+      </div>
+      <div id="m-saved" class="saved" hidden>✓ 已串接（不顯示金鑰）。</div>
+      <button class="btn" data-act="moi">驗證並儲存</button>
+      <button class="btn danger" data-clear="moi">取消串接</button>
+      <div class="res" id="r-moi"></div>
+    </div>
+    <div class="card"><h3><span class="num">3</span>查一筆土地標示部</h3>
+      <div class="row">
+        <div><label for="mq-unit">地政事務所代碼（2 碼英文）</label><input id="mq-unit" placeholder="例：AA" maxlength="2"></div>
+        <div><label for="mq-sec">段代碼（4 碼）</label><input id="mq-sec" placeholder="例：0001" maxlength="4"></div>
+        <div><label for="mq-no">地號</label><input id="mq-no" placeholder="例：123-4"></div>
+      </div>
+      <button class="btn ghost" data-act="moiQuery">查詢（查過的不再收費）</button>
+      <button class="btn" data-act="moiQueryConfirm" hidden id="mq-confirm">確認查詢（會收費 1 筆）</button>
+      <div class="res" id="r-moiQuery"></div>
+      <div class="tablebox" id="mq-table"></div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="custom-ad">需要改成你們公司的版本、幫忙安裝或串接？加 LINE 官方帳號 <a href="https://line.me/R/ti/p/@812ibtir" target="_blank" rel="noopener">@812ibtir</a>（留白事務所・林其衞），原則上 1～2 個工作天回覆報價。</span><br>
+    原始碼授權：Apache-2.0。這個頁面只在架設的電腦上打得開。
+  </footer>
+</div>
+
+<script>
+const COUNTIES = ["台北市","新北市","基隆市","桃園市","新竹市","新竹縣","苗栗縣","台中市","彰化縣","南投縣","雲林縣","嘉義市","嘉義縣","台南市","高雄市","屏東縣","宜蘭縣","花蓮縣","台東縣","澎湖縣","金門縣","連江縣"];
+const $ = id => document.getElementById(id);
+let pollTimer = null;
+
+async function api(path, body) {
+  const opt = body === undefined ? {} : {method: "POST", headers: {"Content-Type": "application/json", "X-Rea-Setup": "1"}, body: JSON.stringify(body)};
+  const r = await fetch("/setup/api/" + path, opt);
+  try { return await r.json(); } catch (e) { return {ok: false, msg: "服務沒有回應，請確認程式還在跑（" + r.status + "）"}; }
+}
+
+function show(id, res) {
+  const el = $("r-" + id);
+  el.className = "res " + (res.ok ? "ok" : "bad");
+  el.textContent = "";
+  const p = document.createElement("div");
+  p.textContent = (res.ok ? "✓ " : "✗ ") + (res.msg || "");
+  el.appendChild(p);
+  if (res.fix && res.fix.length) {
+    const t = document.createElement("div"); t.textContent = "怎麼修："; t.style.marginTop = "6px"; el.appendChild(t);
+    const ol = document.createElement("ol");
+    res.fix.forEach(f => { const li = document.createElement("li"); li.textContent = f; ol.appendChild(li); });
+    el.appendChild(ol);
+  }
+}
+
+async function run(btn, id, path, body, after) {
+  btn.disabled = true; const old = btn.textContent; btn.textContent = "處理中…";
+  try { const res = await api(path, body); show(id, res); if (after) after(res); await refresh(); }
+  finally { btn.disabled = false; btn.textContent = old; }
+}
+
+const ACTS = {
+  lineKeys: b => run(b, "lineKeys", "line/keys", {secret: $("l-secret").value, token: $("l-token").value},
+                     r => { if (r.ok) { $("l-secret").value = ""; $("l-token").value = ""; if (r.data.basic_id) $("l-basic").textContent = r.data.basic_id; } }),
+  lineSignup: b => run(b, "lineSignup", "line/signup", {mode: $("l-signup").value}),
+  lineWebhook: b => run(b, "lineWebhook", "line/webhook", {public_base: $("l-base").value}),
+  lineClaim: b => run(b, "lineClaim", "line/claim", {}, r => {
+    if (!r.ok) return;
+    $("l-code-inline").textContent = r.data.code;
+    const el = $("r-lineClaim"); el.className = "res info"; el.textContent = "";
+    const c = document.createElement("div"); c.className = "code"; c.textContent = r.data.code; el.appendChild(c);
+    const t = document.createElement("div"); t.textContent = "用手機傳「管理員 " + r.data.code + "」給官方帳號。傳了之後這裡會自動打勾。"; el.appendChild(t);
+    clearInterval(pollTimer); let n = 0;
+    pollTimer = setInterval(async () => { n++; const s = await api("status"); paint(s);
+      if (s.line.admin) { clearInterval(pollTimer); show("lineClaim", {ok: true, msg: "綁定完成！你已經是管理員，可以在 LINE 打「功能」開始用。"}); }
+      if (n > 200) clearInterval(pollTimer); }, 3000);
+  }),
+  search: b => run(b, "search", "search/check", {provider: $("s-provider").value, key: $("s-key").value}, r => { if (r.ok) $("s-key").value = ""; }),
+  gsheetCustomers: b => run(b, "gsheetCustomers", "gsheet/check", {kind: "customers", url: $("g-customers").value}, r => { if (r.ok) $("g-customers").value = ""; }),
+  gsheetListings: b => run(b, "gsheetListings", "gsheet/check", {kind: "listings", url: $("g-listings").value}, r => { if (r.ok) $("g-listings").value = ""; }),
+  gsheetSyncCustomers: b => run(b, "gsheetCustomers", "gsheet/sync", {kind: "customers"}),
+  gsheetSyncListings: b => run(b, "gsheetListings", "gsheet/sync", {kind: "listings"}),
+  lvr: b => run(b, "lvr", "lvr/check", {counties: [...document.querySelectorAll("#lvr-counties input:checked")].map(x => x.value).join("、")}),
+  lvrQuery: b => run(b, "lvrQuery", "lvr/query", {county: $("lq-county").value, district: $("lq-district").value}, lvrResult),
+  moi: b => run(b, "moi", "moi/check", {client_id: $("m-id").value, secret: $("m-secret").value, daily_limit: $("m-limit").value},
+                r => { if (r.ok) { $("m-id").value = ""; $("m-secret").value = ""; } }),
+  moiQuery: b => moiQ(b, false),
+  moiQueryConfirm: b => moiQ(b, true),
+};
+
+function moiQ(b, confirm) {
+  return run(b, "moiQuery", "moi/query", {unit: $("mq-unit").value, sec: $("mq-sec").value, no: $("mq-no").value, confirm},
+    r => { $("mq-confirm").hidden = !(r.data && r.data.need_confirm); table("mq-table", r.ok ? Object.entries(r.data.fields || {}) : [], ["欄位", "值"]); });
+}
+
+function table(id, rows, head) {
+  const box = $(id); box.textContent = "";
+  if (!rows.length) return;
+  const t = document.createElement("table"), tr = document.createElement("tr");
+  head.forEach(h => { const th = document.createElement("th"); th.textContent = h; tr.appendChild(th); }); t.appendChild(tr);
+  rows.forEach(r => { const tr = document.createElement("tr"); r.forEach(c => { const td = document.createElement("td"); td.textContent = c; tr.appendChild(td); }); t.appendChild(tr); });
+  box.appendChild(t);
+}
+
+function lvrResult(r) {
+  if (!r.ok) { table("lq-table", [], []); return; }
+  if (r.data.districts) {
+    const sel = $("lq-district"); sel.textContent = "";
+    r.data.districts.forEach(d => { const o = document.createElement("option"); o.value = o.textContent = d; sel.appendChild(o); });
+    table("lq-table", [], []); return;
+  }
+  table("lq-table", (r.data.recent || []).map(x => [x.date, x.type, x.place, x.ping, x.total_wan, x.unit_wan_per_ping]),
+        ["交易日（民國）", "型態", "位置（政府原始資料）", "坪", "總價（萬）", "單價（萬/坪）"]);
+}
+
+function paint(s) {
+  const f = s.fields;
+  $("d-line").classList.toggle("ok", !!(s.line.keys && s.line.admin));
+  $("d-search").classList.toggle("ok", !!s.search.key);
+  $("d-gsheet").classList.toggle("ok", !!(s.gsheet.customers || s.gsheet.listings));
+  $("d-lvr").classList.toggle("ok", !!s.lvr.counties);
+  $("d-moi").classList.toggle("ok", !!s.moi.keys);
+  $("l-keys-saved").hidden = !s.line.keys;
+  $("c-l3").classList.toggle("done", !!s.line.keys);
+  $("c-l4").classList.toggle("done", !!(s.line.keys && s.line.public_base && s.line.webhook_ok));
+  $("c-l5").classList.toggle("done", !!s.line.admin);
+  if (s.line.public_base && !$("l-base").value) $("l-base").value = s.line.public_base;
+  $("s-saved").hidden = !s.search.key;
+  if (s.search.provider) $("s-provider").value = s.search.provider;
+  $("g-customers-saved").hidden = !s.gsheet.customers;
+  $("g-listings-saved").hidden = !s.gsheet.listings;
+  $("m-saved").hidden = !s.moi.keys;
+  if (s.moi.daily_limit) $("m-limit").value = s.moi.daily_limit;
+  const chosen = (s.lvr.counties || "").split("、").filter(Boolean);
+  document.querySelectorAll("#lvr-counties input").forEach(x => { if (chosen.includes(x.value)) x.checked = true; });
+  if (s.rent_url) $("rentLink").href = s.rent_url;
+  if (s.signup_mode) $("l-signup").value = s.signup_mode;
+  const NAMES = {line: "LINE 官方帳號", gsheet_customers: "Google 試算表（客戶）", gsheet_listings: "Google 試算表（物件）", search: "591／樂屋搜尋服務", moi: "地政平台"};
+  const bad = Object.entries(s.health || {}).filter(([k, v]) => v && v.ok === false);
+  const box = $("health-list"); box.textContent = "";
+  bad.forEach(([k, v]) => { const d = document.createElement("div"); d.textContent = "・" + (NAMES[k] || k) + "：" + v.msg + "（" + (v.since || "").replace("T", " ").slice(0, 16) + " 起）"; box.appendChild(d); });
+  $("health").hidden = !bad.length;
+}
+
+async function refresh() { paint(await api("status")); }
+
+function init() {
+  const box = $("lvr-counties"), sel = $("lq-county");
+  COUNTIES.forEach(c => {
+    const l = document.createElement("label"), i = document.createElement("input");
+    i.type = "checkbox"; i.value = c; l.appendChild(i); l.appendChild(document.createTextNode(c)); box.appendChild(l);
+    const o = document.createElement("option"); o.value = o.textContent = c; sel.appendChild(o);
+  });
+  sel.addEventListener("change", () => { $("lq-district").innerHTML = '<option value="">（按查詢載入行政區）</option>'; });
+  sel.value = "台中市";
+  document.querySelectorAll("#tabs button").forEach(b => b.addEventListener("click", () => {
+    document.querySelectorAll("#tabs button").forEach(x => x.classList.toggle("on", x === b));
+    document.querySelectorAll("section").forEach(s => s.classList.toggle("on", s.id === "s-" + b.dataset.t));
+  }));
+  document.querySelectorAll("[data-act]").forEach(b => b.addEventListener("click", () => ACTS[b.dataset.act](b)));
+  document.querySelectorAll("[data-clear]").forEach(b => b.addEventListener("click", async () => {
+    if (b.dataset.armed !== "1") { b.dataset.armed = "1"; b.textContent = "再按一次確定取消"; setTimeout(() => { b.dataset.armed = ""; b.textContent = "取消串接"; }, 4000); return; }
+    b.dataset.armed = ""; const res = await api("clear", {group: b.dataset.clear}); alertBox(b, res); await refresh();
+  }));
+  refresh();
+}
+function alertBox(b, res) { const el = b.parentElement.querySelector(".res"); if (el) { show(el.id.slice(2), res); } }
+init();
+</script>
+</body>
+</html>

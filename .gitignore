@@ -1,0 +1,37 @@
+# 房仲自動化神器 — 從第一個 commit 就擋個資／金鑰／本機識別字
+tools/identifiers.txt
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*secret*
+*密語*
+*帳密*
+*金鑰*
+# 任何真實資料
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.xlsx
+*.csv
+!tests/fixtures/*.csv
+*.jsonl
+_*.json
+!tools/sync_manifest.json
+# 執行期
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+.next/
+*.log
+.claude/worktrees/
+docs/_*.md
+
+# 啟動器的停止紙條
+stop.request
+!docs/金鑰申請.md

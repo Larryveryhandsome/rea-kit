@@ -1,0 +1,30 @@
+{
+  "name": "rea-kit",
+  "version": "0.1.0",
+  "description": "台灣房仲的高頻工作流：整理客需、配對物件、行情與產權檢查、屋主定價議價，加上客戶回覆話術、跑開發路線、委託續約、物件文案與發文規劃、推播品質關卡、客戶跟進與社群買方判斷。",
+  "license": "Apache-2.0",
+  "keywords": [
+    "taiwan-real-estate",
+    "realtor",
+    "property",
+    "broker-workflows"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "房仲自動化神器",
+    "shortDescription": "把房仲高頻工作變成可重複執行的 SOP",
+    "longDescription": "依使用者提供的物件、買方需求與文件，產出客需卡、配對理由與人工審核清單。此為 Skills-only 套件，沒有即時網站抓取、背景監測、私人 LINE 讀取或自動發訊息；未部署的工具不得宣稱可用。",
+    "category": "Productivity",
+    "capabilities": [
+      "Analyze",
+      "Write",
+      "Plan"
+    ],
+    "defaultPrompt": [
+      "把這批新案配給最適合的買方",
+      "掃描指定區域的新案並列出值得先看的物件",
+      "幫我檢查這批物件哪些資料還不完整"
+    ],
+    "brandColor": "#0F766E"
+  }
+}

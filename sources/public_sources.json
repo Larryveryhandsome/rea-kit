@@ -1,0 +1,18 @@
+[
+  {"source_id":"sinyi","display_name":"信義房屋","kind":"agency","homepage":"https://www.sinyi.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"twhg","display_name":"台灣房屋","kind":"agency","homepage":"https://www.twhg.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"hbhousing","display_name":"住商不動產","kind":"agency","homepage":"https://www.hbhousing.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"cthouse","display_name":"中信房屋","kind":"agency","homepage":"https://www.cthouse.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"nra","display_name":"全國不動產","kind":"agency","homepage":"https://www.nra.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"pacific","display_name":"太平洋房屋","kind":"agency","homepage":"https://www.pacific.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"century21","display_name":"21世紀不動產","kind":"agency","homepage":"https://www.century21.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"great-home","display_name":"大家房屋","kind":"agency","homepage":"https://www.great-home.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"uhome","display_name":"優美地產","kind":"agency","homepage":"https://www.uhome.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"etwarm","display_name":"東森房屋","kind":"agency","homepage":"https://www.etwarm.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"chiunyi","display_name":"群義房屋","kind":"agency","homepage":"https://www.chiunyi.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"rakuya","display_name":"樂屋網","kind":"marketplace","homepage":"https://www.rakuya.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"housefun","display_name":"好房網","kind":"marketplace","homepage":"https://housefun.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"leju","display_name":"樂居","kind":"marketplace","homepage":"https://www.leju.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"houseweb","display_name":"房仲網","kind":"marketplace","homepage":"https://www.houseweb.com.tw","status":"candidate-unverified","parser":"source-specific"},
+  {"source_id":"moi-agency-registry","display_name":"內政部不動產經紀業備查資料","kind":"registry","homepage":"https://data.gov.tw/dataset/25114","status":"candidate-unverified","parser":"government-csv"}
+]
