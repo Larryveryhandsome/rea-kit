@@ -160,7 +160,7 @@ def overview(app) -> dict:
 
 # 開源版作者的客製化服務資訊：只在管理員面板頁尾，不會傳給客戶（依 NOTICE 轉散布請保留）
 CUSTOM_AD_HTML = ("<p class='custom-ad'>需要改成你們公司的版本、幫忙安裝或串接？加 LINE 官方帳號 "
-                  "<a href='https://line.me/R/ti/p/@812ibtir' target='_blank' rel='noopener'>@812ibtir</a>"
+                  "<a href='https://line.me/ti/p/xzHT2IywOM' target='_blank' rel='noopener'>林其衞</a>"
                   "（留白事務所，林其衞），原則上 1～2 個工作天回覆報價。</p>")
 
 STYLE = """

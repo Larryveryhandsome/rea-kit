@@ -226,7 +226,7 @@ def line_test_webhook(token: str, endpoint: str, *, opener=None, api: str = LINE
     if "refused" in low:
         return Check(False, "LINE 連過去被拒絕：主機有開，但服務沒在聽。", ["確認服務有啟動、通道指到正確的埠"])
     return Check(False, f"LINE 連不到你的服務（狀態 {code or '無'}）。",
-                 ["確認服務和通道都在跑，再按一次測試", "還是不行，可以截圖這個畫面到 LINE @812ibtir 問我們"],
+                 ["確認服務和通道都在跑，再按一次測試", "還是不行，可以截圖這個畫面到 LINE 林其衞（0928-880-392） 問我們"],
                  data={"status": code})
 
 

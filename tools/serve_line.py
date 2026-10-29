@@ -85,8 +85,8 @@ def main():
             path.unlink()
         watch_for_stop(server, path)
     try:   # 服務輸出寫在 server.log；背景執行沒有主控台時 print 不會出錯
-        print("需要改成你們公司的版本、幫忙安裝或串接？加 LINE 官方帳號 @812ibtir（留白事務所，林其衞），"
-              "原則上 1～2 個工作天回覆報價。https://line.me/R/ti/p/@812ibtir", flush=True)
+        print("需要改成你們公司的版本、幫忙安裝或串接？加 LINE 林其衞（0928-880-392），"
+              "原則上 1～2 個工作天回覆報價。https://line.me/ti/p/xzHT2IywOM", flush=True)
     except Exception:
         pass
     try:

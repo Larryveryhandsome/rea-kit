@@ -30,8 +30,8 @@ PORT = int(os.environ.get("PORT", "8080"))
 BASE = f"http://127.0.0.1:{PORT}"
 STARTUP_NAME = "rea-kit-autostart.vbs"
 # 開源版作者的客製化服務資訊（啟動時印一行；依 NOTICE 轉散布請保留）
-CUSTOM_AD = ("需要改成你們公司的版本、幫忙安裝或串接？加 LINE 官方帳號 @812ibtir（留白事務所，林其衞），"
-             "原則上 1～2 個工作天回覆報價。https://line.me/R/ti/p/@812ibtir")
+CUSTOM_AD = ("需要改成你們公司的版本、幫忙安裝或串接？加 LINE 林其衞（0928-880-392），"
+             "原則上 1～2 個工作天回覆報價。https://line.me/ti/p/xzHT2IywOM")
 
 
 def running(timeout=1.5) -> bool:

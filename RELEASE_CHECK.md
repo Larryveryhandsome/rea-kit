@@ -76,7 +76,7 @@
 | 測的版本＝要發布的版本 | ✅ 乾淨 clone 的 `fcb4279` 跑測試；修正後再重跑 382 項全過 |
 | 乾淨環境照 README 安裝 | ✅ 建 venv、`pip install -r requirements-server.txt`、`tools/serve_line.py` 啟動、`/healthz`、`/setup` 都通 |
 | Docker | ⚠️ 有 `Dockerfile`，這台沒有 docker，未實測（README 已標🟡） |
-| 去識別化（現有檔案） | ✅ `deep_audit.py` 命中逐筆判讀：「宜蘭／泰山／池上」是行政區字典與測試資料（地名，不是個資）；`velo` 是 LICENSE／英文字「develop」的誤判；測試裡的 `SECRET=...` 是合成假值（`0123…ef`、`synthetic-secret`）；`xxxx.trycloudflare.com` 是說明用範例網址；「留白事務所／留白創研」為作者署名、收款主體與客製化 LINE（`@812ibtir`），是刻意保留（見下方請店長確認） |
+| 去識別化（現有檔案） | ✅ `deep_audit.py` 命中逐筆判讀：「宜蘭／泰山／池上」是行政區字典與測試資料（地名，不是個資）；`velo` 是 LICENSE／英文字「develop」的誤判；測試裡的 `SECRET=...` 是合成假值（`0123…ef`、`synthetic-secret`）；`xxxx.trycloudflare.com` 是說明用範例網址；「留白事務所／留白創研」為作者署名、收款主體與客製化 LINE（`林其衞的 LINE`），是刻意保留（見下方請店長確認） |
 | CI | ✅ 本次新增 `.github/workflows/test.yml`（Python 3.10、3.13、ubuntu：測試＋Skills／卡片／pii 檢查）；GitHub Actions 實跑 `success`（run 40058072012） |
 | **git 歷史** | ⚠️ **歷史需全新（待店長同意 force push）**：第一個 commit `6040172` 的 README 有一次本人真名（`deep_audit.py` 🟡 歷史命中）。作者信箱全部是 noreply |
 
@@ -101,7 +101,7 @@
 ## 要店長決定／處理
 
 1. **歷史要全新**：同意 force push 重建歷史，或另建新 repo 單一 commit 發布。（我沒有做。）
-2. **作者署名、收款主體、客製化 LINE**：README、`docs/主機租用方案.md`、`web/setup.html` 仍有「留白事務所」「留白創研有限公司」與 LINE `@812ibtir`。這是上一個 commit 刻意的作者署名與商務入口；若 10/24 新規則要求連品牌名都去掉，需要店長說一聲。
+2. **作者署名、收款主體、客製化 LINE**：README、`docs/主機租用方案.md`、`web/setup.html` 仍有「留白事務所」「留白創研有限公司」與 LINE `林其衞的 LINE`。這是上一個 commit 刻意的作者署名與商務入口；若 10/24 新規則要求連品牌名都去掉，需要店長說一聲。
 3. 主機租用方案的價格仍是草稿（`docs/主機租用方案.md`）。
 4. 接受「真實串接未實測」「Docker 未實測」的已知限制。
 5. 原專案的夜間自我檢查排程已被刪除（不是本檢查動的），要不要重建由店長決定。
@@ -126,7 +126,7 @@
 | 店長決策 | O02「兩個都公開」（2026-10-27）；第 3 道「真實帳號未實測」的已知限制一併接受，README 已註明 |
 | 新發現的 bug | 客製化服務資訊含「衞」，繁中 Windows 主控台（cp950）印不出 → `tools/start.py` 啟動會當掉。已改成印不出的字換成 ?，並加回歸測試 |
 | 全部測試 | 繁中 Windows cp950 主控台：384 項全過（原 382） |
-| 去識別化掃描 | `deep_audit.py`（現有檔案＋全歷史＋作者信箱＋照片 GPS），報告 `_qa/deep/O02_公開前.md`：命中全部判讀為誤判或刻意保留（行政區地名、velo 誤判、作者署名與 @812ibtir 客製化廣告、測試用合成假值、說明用範例網址）；歷史命中 0、非 noreply 作者 0 |
+| 去識別化掃描 | `deep_audit.py`（現有檔案＋全歷史＋作者信箱＋照片 GPS），報告 `_qa/deep/O02_公開前.md`：命中全部判讀為誤判或刻意保留（行政區地名、velo 誤判、作者署名與 林其衞的 LINE 客製化廣告、測試用合成假值、說明用範例網址）；歷史命中 0、非 noreply 作者 0 |
 | 授權 | 授權由 AGPL-3.0-only 改為 Apache-2.0（LICENSE、NOTICE、README、plugin.json、setup 頁同步）；Apache-2.0＋NOTICE（轉散布須保留作者與客製化聯絡資訊） |
 | 金鑰 | 沒有任何真實金鑰進過這個 repo，不需輪替 |
 | 第 7 道 | 舊歷史 bundle 備份後，以目前內容建立全新單一 commit 並 force push，再改 PUBLIC，最後從乾淨 clone 重跑測試與掃描 |

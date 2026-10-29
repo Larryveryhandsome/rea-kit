@@ -24,7 +24,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 COOKIE = "rea_setup"
 FORWARD_HEADERS = ("HTTP_X_FORWARDED_FOR", "HTTP_X_FORWARDED_HOST", "HTTP_X_REAL_IP", "HTTP_FORWARDED",
                    "HTTP_CF_CONNECTING_IP", "HTTP_CF_RAY", "HTTP_TRUE_CLIENT_IP", "HTTP_X_ORIGINAL_FORWARDED_FOR")
-RENT_URL = "https://lin.ee/pdYGARu"
+RENT_URL = "https://line.me/ti/p/xzHT2IywOM"
 MAX_BODY = 20_000
 # Google 試算表範本（第二列是假資料；電話、地址、身分證不要放，放了也不會匯入）
 TEMPLATES = {
@@ -325,7 +325,7 @@ def make_setup_app(holder, settings: SettingsStore, *, token: str | None = None,
             except Exception as e:                       # 不讓精靈白畫面；也不把例外內容（可能含網址）整段吐出
                 import traceback
                 traceback.print_exc()                    # 只進本機 server.log，不回給畫面
-                res = C.Check(False, f"發生沒預料到的錯誤（{type(e).__name__}），請截圖這個畫面到 LINE @812ibtir 問我們。")
+                res = C.Check(False, f"發生沒預料到的錯誤（{type(e).__name__}），請截圖這個畫面到 LINE 林其衞（0928-880-392） 問我們。")
             return js(start_response, res.as_dict())
         return js(start_response, {"ok": False, "msg": "not found"}, "404 Not Found")
 

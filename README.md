@@ -84,7 +84,7 @@
 自己架需要一台 24 小時開機的電腦、穩定網路和 HTTPS 網址。不想顧這些，可以跟我們租：
 主機、網址、LINE 串接代辦、每日備份、自動更新都包含；**資料歸你所有，退租時完整匯出**。
 
-方案與草稿價格見 **[docs/主機租用方案.md](docs/主機租用方案.md)**，或直接 LINE 問我們：[@812ibtir](https://lin.ee/pdYGARu)（請註明「房仲自動化神器 租主機」）。
+方案與草稿價格見 **[docs/主機租用方案.md](docs/主機租用方案.md)**，或直接 LINE 問我們：[林其衞](https://line.me/ti/p/xzHT2IywOM)（請註明「房仲自動化神器 租主機」）。
 
 ## 開發者
 
@@ -129,8 +129,8 @@ python tools/pii_scan.py --all                           # 去識別化掃描（
 
 歡迎加 LINE 跟我們聊。我們會依需求的範圍與複雜度報價，原則上以實際報價單為準。
 
-<a href="https://lin.ee/pdYGARu"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="36"></a>
+<a href="https://line.me/ti/p/xzHT2IywOM"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/zh-Hant.png" alt="加入好友" height="36"></a>
 
-- 💬 LINE 官方帳號：[@812ibtir](https://lin.ee/pdYGARu)（請註明「房仲自動化神器 客製化」）
+- 💬 LINE：[林其衞](https://line.me/ti/p/xzHT2IywOM)（請註明「房仲自動化神器 客製化」）
 - 🏢 留白事務所：網頁設計、AI 自動化、房仲遠端助理
 - 👤 作者：[留白事務所](https://github.com/Larryveryhandsome)
