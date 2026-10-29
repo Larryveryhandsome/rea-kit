@@ -56,7 +56,7 @@ SECRET = re.compile(r"(sk-[A-Za-z0-9]{20,}|Bearer\s+[A-Za-z0-9+/=_-]{30,}|[A-Za-
 
 
 def load_identifiers():
-    words, public = [], set()
+    words, public = [], {"0928880392"}   # 作者公開的客製化聯絡電話（README、畫面廣告本來就要顯示）
     sec = None
     if IDF is None:
         # CI／公開 clone 本來就沒有這份清單；開發機上缺了就等於守門少一層，要講出來
