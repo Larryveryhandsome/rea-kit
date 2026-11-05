@@ -162,7 +162,10 @@ def parse_date(v: Any) -> str | None:
     y, mo, d = (int(x) for x in m.groups())
     if y < 1911:                          # 民國年
         y += 1911
-    return datetime.date(y, mo, d).isoformat()
+    try:
+        return datetime.date(y, mo, d).isoformat()
+    except ValueError:                    # 2 月 30 日、13 月：不要把英文錯誤丟給使用者
+        raise ValueError(f"日期不存在：{s[:20]}（請確認月份和日期）") from None
 
 
 # ── 交易、型態、上架、區域 ──

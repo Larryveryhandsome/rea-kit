@@ -129,6 +129,8 @@ class CsvCustomerSource:
                     rep.errors.append({"line": line, "reason": "客戶編號重複（只收第一筆）"})
                     continue
                 seen.add(cid)
+                if cust.pop("_bad_label", False):
+                    rep.errors.append({"line": line, "reason": "稱呼看起來含電話或 email，沒有收進來（已匯入客戶，請改用暱稱）"})
                 if cust.pop("_bad_target", False):
                     rep.errors.append({"line": line, "reason": "LINE ID 格式不對，已匯入客戶但不會推播（請補正確的群組 ID）"})
                 old = book.get(cid)
@@ -180,17 +182,27 @@ class CsvCustomerSource:
         lo, hi = parse_budget(get("budget_max"), transaction=tx, header=mp.get("budget_max", ""))
         if "budget_min" in mp and get("budget_min"):
             _, lo = parse_budget(get("budget_min"), transaction=tx, header=mp["budget_min"])
+        if lo is not None and hi is not None and lo > hi:
+            raise ValueError("預算下限比上限還高，請確認（例：800-1500）")
         target = get("line_target").strip()
         members = P.parse_number(get("members")) if get("members") else None
         need = {"transaction": tx, "preferred_areas": areas, "budget_min": lo, "budget_max": hi,
                 "budget_tolerance_pct": tolerance, "property_type": P.parse_property_type(get("property_type")),
                 "rooms_min": P.parse_rooms(get("rooms_min"))}
-        out = {"customer_id": cid, "label": get("label").strip()[:30] or None,
+        label = get("label").strip()[:30] or None
+        if label:
+            try:
+                label = validate_customer_label(label)
+            except ValueError:                   # 稱呼欄填了電話／email：不收（個資紅線），客人照樣匯入
+                label = None
+        out = {"customer_id": cid, "label": label,
                "status": parse_status(get("status")), "need_card": need,
                "line_target": target if is_line_id(target) else None,
                "members": int(members) if members else None}
         if target and not is_line_id(target):
             out["_bad_target"] = True
+        if label is None and get("label").strip():
+            out["_bad_label"] = True
         return out
 
     # ── CustomerSource 介面 ──

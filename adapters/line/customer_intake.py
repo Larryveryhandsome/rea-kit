@@ -344,7 +344,7 @@ def make_intake_handler(customers: CsvCustomerSource, *, listings=None, now=date
                     draft = {"step": "transaction" if old else "label", "need": {"budget_tolerance_pct": 0},
                              "started": now().timestamp()}
                     if old:
-                        draft.update(label=old["label"], customer_id=old["customer_id"],
+                        draft.update(label=old.get("label") or "未命名", customer_id=old["customer_id"],
                                      version=old["need_card"].get("version", 1))
                     replies = [prompt(draft)]
                 elif command in ("客戶清單", "找客戶"):
