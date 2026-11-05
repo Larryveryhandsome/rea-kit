@@ -210,3 +210,21 @@ class ListingMatchFlowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SheetListingButtonTests(unittest.TestCase):
+    """試算表／CSV 匯入的物件（編號不是 M001 這種）：卡片上的「配對／物件／下架」按鈕要有反應（2026-11-05 複查）。"""
+    setUp = support.CustomerIntakeTests.setUp
+    tearDown = support.CustomerIntakeTests.tearDown
+    send = support.CustomerIntakeTests.send
+
+    def test_buttons_work_for_sheet_ids(self):
+        listings = self.app.listings
+        listings.import_csv("tenant-a", "物件編號,交易,縣市,區域,總價(萬)\r\nS-001,出售,台中市,西屯區,1180\r\n")
+        self.assertIn("S-001", self.send("物件 S-001")["text"])
+        self.assertIn("沒有適合的買方", self.send("配對 S-001")["text"])
+        self.assertIn("已下架", self.send("下架 S-001")["text"])
+        self.assertFalse(listings.get("tenant-a", "S-001")["online"])
+        self.assertIn("已上架", self.send("上架 s-001")["text"])                # 小寫也找得到
+        self.assertTrue(listings.get("tenant-a", "S-001")["online"])
+        self.assertIn("找不到", self.send("物件 X-404")["text"])

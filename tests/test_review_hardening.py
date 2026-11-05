@@ -39,6 +39,22 @@ class InviteOnlyTests(unittest.TestCase):
         self.send("同意並開始", user=ADMIN)                                     # 管理員自己可以
         self.assertIsNotNone(self.app.registry.tenant_of(ADMIN))
 
+    def test_no_admin_yet_only_first_person_can_sign_up(self):
+        # 還沒設管理員（例：Docker 只用環境變數、或精靈第 5 步之前）：只有第一個人能自己加入，
+        # 不能變成「任何陌生人都能加入」。這裡 setUp 已經有一位仲介綁定了。
+        self.env(REA_ADMIN_USERS="", REA_SIGNUP_MODE="")
+        self.assertEqual(self.send("同意並開始", user=STRANGER)["text"], INVITE_ONLY)
+        self.assertIsNone(self.app.registry.tenant_of(STRANGER))
+
+    def test_no_admin_yet_pending_claim_code_lets_owner_in(self):
+        # 精靈第 5 步已經產生管理員碼（10 分鐘內）：負責人要先「同意並開始」才能傳「管理員 123456」
+        from adapters.settings_store import SettingsStore
+        from web import setup_claim
+        self.env(REA_ADMIN_USERS="", REA_SIGNUP_MODE="")
+        setup_claim.issue_code(SettingsStore(self.store.root))
+        self.send("同意並開始", user=STRANGER)
+        self.assertIsNotNone(self.app.registry.tenant_of(STRANGER))
+
     def test_open_mode_lets_anyone_in(self):
         self.env(REA_ADMIN_USERS=ADMIN, REA_SIGNUP_MODE="open")
         self.send("同意並開始", user=STRANGER)

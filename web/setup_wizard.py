@@ -303,16 +303,16 @@ def make_setup_app(holder, settings: SettingsStore, *, token: str | None = None,
             return js(start_response, status())
         if path.startswith("/setup/api/") and method == "POST":
             if environ.get("HTTP_X_REA_SETUP") != "1":
-                return js(start_response, {"ok": False, "msg": "bad request"}, "400 Bad Request")
+                return js(start_response, {"ok": False, "msg": "請求格式不對：請重新整理精靈頁面再按一次。"}, "400 Bad Request")
             fn = ROUTES.get(path[len("/setup/api/"):])
             if fn is None:
-                return js(start_response, {"ok": False, "msg": "not found"}, "404 Not Found")
+                return js(start_response, {"ok": False, "msg": "找不到這個功能：請重新整理精靈頁面；還是不行請更新到最新版。"}, "404 Not Found")
             try:
                 n = int(environ.get("CONTENT_LENGTH") or 0)
             except ValueError:
                 n = 0
             if n > MAX_BODY:
-                return js(start_response, {"ok": False, "msg": "too large"}, "413 Payload Too Large")
+                return js(start_response, {"ok": False, "msg": "貼上的內容太長了：請只貼金鑰或網址本身，不要整段複製。"}, "413 Payload Too Large")
             try:
                 body = json.loads(environ["wsgi.input"].read(n).decode("utf-8") or "{}") if n else {}
             except (UnicodeDecodeError, ValueError):
@@ -327,7 +327,7 @@ def make_setup_app(holder, settings: SettingsStore, *, token: str | None = None,
                 traceback.print_exc()                    # 只進本機 server.log，不回給畫面
                 res = C.Check(False, f"發生沒預料到的錯誤（{type(e).__name__}），請截圖這個畫面到 LINE 林其衞（0928-880-392） 問我們。")
             return js(start_response, res.as_dict())
-        return js(start_response, {"ok": False, "msg": "not found"}, "404 Not Found")
+        return js(start_response, {"ok": False, "msg": "找不到這個功能：請重新整理精靈頁面；還是不行請更新到最新版。"}, "404 Not Found")
 
     wsgi.token = token
     return wsgi
