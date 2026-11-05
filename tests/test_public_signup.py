@@ -2,8 +2,10 @@
 回來的人用同一份資料、服務條款頁、LINE 月額度自動跟上、同樣的搜尋共用結果。合成資料、本機假 LINE、不連網。"""
 import datetime
 import json
+import os
 import tempfile
 import unittest
+import unittest.mock
 
 import test_customer_intake as support
 from adapters.line.fake_api import synthetic_line_id
@@ -16,7 +18,13 @@ NEW = synthetic_line_id("U", "public-newcomer")
 
 
 class SignupTests(unittest.TestCase):
-    setUp = support.CustomerIntakeTests.setUp
+    """開放模式（REA_SIGNUP_MODE=open）。預設 invite 模式的擋人測試在 test_review_hardening.InviteOnlyTests。"""
+    def setUp(self):
+        env = unittest.mock.patch.dict(os.environ, {"REA_SIGNUP_MODE": "open"})
+        env.start()
+        self.addCleanup(env.stop)
+        support.CustomerIntakeTests.setUp(self)
+
     tearDown = support.CustomerIntakeTests.tearDown
     send = support.CustomerIntakeTests.send
 

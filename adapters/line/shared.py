@@ -292,12 +292,22 @@ class SharedLineApp:
                         policy=GatePolicy.from_dict({"modes": {"match": "auto"}}), now=self._now)
 
     def may_sign_up(self, user_id: str) -> bool:
-        """invite 模式：管理員自己、或還沒設任何管理員（第一次設定）時才能自己加入。"""
+        """invite 模式：管理員自己才能自己加入。
+
+        還沒設任何管理員時（第一次設定）：只有「還沒有任何人加入」或「精靈正在綁定管理員（管理員碼有效中）」
+        才放行，避免只設環境變數、忘了設 REA_ADMIN_USERS 的部署變成任何陌生人都能加入。
+        """
         if (getattr(self, "signup_mode", None) or signup_mode()) == "open":
             return True
         from web.admin_app import admins
         current = admins()
-        return not current or user_id in current
+        if current:
+            return user_id in current
+        if not self.registry.tenants():
+            return True
+        from adapters.settings_store import SettingsStore
+        from web import setup_claim
+        return setup_claim.pending(SettingsStore(self.store.root), now=self._now)
 
     # ── 對內：工作排程用來通知仲介 ──
     def notify(self, tenant_id: str, messages: list[dict], *, kind: str = "agent_digest",

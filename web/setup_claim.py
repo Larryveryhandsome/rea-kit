@@ -57,6 +57,12 @@ def redeem(settings: SettingsStore, user_id: str, code: str, now=datetime.dateti
     return True, "✓ 你已經是這個系統的管理員了。回到電腦上的串接精靈，畫面會自動打勾。"
 
 
+def pending(settings: SettingsStore, now=datetime.datetime.now) -> bool:
+    """精靈第 5 步產生的管理員碼還在有效期內（負責人正在綁定自己）。"""
+    rec = _load(settings)
+    return bool(rec) and rec.get("exp", "") >= now().isoformat()
+
+
 def claimed(settings: SettingsStore) -> bool:
     return bool(settings.get("REA_ADMIN_USERS")) and _load(settings) is None
 
