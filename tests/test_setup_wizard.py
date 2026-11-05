@@ -273,6 +273,17 @@ class WizardFlowTests(unittest.TestCase):
         st, _, _ = self.call("/setup/api/line/keys", {"secret": SECRET, "token": TOKEN}, headers={"HTTP_X_REA_SETUP": ""})
         self.assertTrue(st.startswith("400"))                                            # 沒自訂標頭（CSRF）
 
+    def test_wizard_api_errors_are_plain_chinese(self):
+        # 精靈畫面會直接顯示 msg：不能丟英文（bad request / not found / too large）
+        self.login()
+        _, _, res = self.call("/setup/api/line/keys", {"secret": SECRET}, headers={"HTTP_X_REA_SETUP": ""})
+        self.assertIn("重新整理", res["msg"])
+        _, _, res = self.call("/setup/api/no-such-step", {})
+        self.assertIn("找不到這個功能", res["msg"])
+        st, _, res = self.call("/setup/api/line/keys", {"secret": "x" * 200_000})
+        self.assertTrue(st.startswith("413"))
+        self.assertIn("太長", res["msg"])
+
     def test_service_runs_before_line_is_set_up(self):
         st, _, body = self.call("/healthz")
         self.assertEqual(body, "setup-needed")
