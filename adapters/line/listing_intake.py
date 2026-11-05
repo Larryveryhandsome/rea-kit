@@ -25,7 +25,7 @@ SKIP = "略過"
 START_WORDS = {"新增物件", "加物件"}
 LIST_WORDS = {"我的物件", "物件清單"}
 DIGEST_WORDS = {"新案", "今天新案", "新物件", "配對"}
-ID_COMMAND = re.compile(r"(物件|配對|下架|上架)\s*(M\d{3,6})", re.I)
+ID_COMMAND = re.compile(r"(物件|配對|下架|上架)\s*([A-Za-z0-9][A-Za-z0-9_\-]{0,63})", re.I)  # LINE 加的 M001，或試算表／CSV 的編號（S-001）
 PHONE_OR_MAIL = re.compile(r"0\d[\d\-\s]{7,}\d|\d{7,}|@")
 YES_NO = {"parking": ("有車位", "沒有車位"), "elevator": ("有電梯", "沒有電梯")}
 MAX_CARD_MESSAGES = 4            # 一次回覆最多 5 則：1 則文字＋最多 4 則卡片
@@ -258,8 +258,11 @@ def make_listing_handler(listings: CsvListingSource, customers: CsvCustomerSourc
                                        + "\n卡片往左滑，按鈕直接點。", ("新增物件",)),
                                listing_cards(list(reversed(own[-flex.MAX_CAROUSEL:])))]
             elif by_id:
-                verb, lid = by_id.group(1), by_id.group(2).upper()
+                verb, lid = by_id.group(1), by_id.group(2)
                 x = listings.get(tenant, lid)
+                if not x and listings.get(tenant, lid.upper()):
+                    lid = lid.upper()                                   # 打小寫 m001 也找得到
+                    x = listings.get(tenant, lid)
                 if not x:
                     replies = [message(f"找不到 {lid}；打「我的物件」看編號。", ("我的物件",))]
                 elif verb == "物件":
