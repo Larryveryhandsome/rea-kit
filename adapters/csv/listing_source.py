@@ -162,8 +162,8 @@ class CsvListingSource:
                 else:
                     rep.unchanged_count += 1
             if replace:
-                for lid, old in snap.items():
-                    if lid not in parsed and old.get("online"):
+                for lid, old in snap.items():               # 只下架「同一個來源」帶進來的；LINE 自己加的物件不動
+                    if lid not in parsed and old.get("online") and old.get("source", source) == source:
                         snap[lid] = {**old, "online": False, "offline_reason": "not_in_latest_import",
                                      "updated_at": ts}
                         rep.removed_ids.append(lid)

@@ -15,7 +15,9 @@ from __future__ import annotations
 
 import csv
 import datetime
+import hashlib
 import io
+import json
 import re
 import uuid
 from copy import deepcopy
@@ -131,16 +133,22 @@ class CsvCustomerSource:
                     rep.errors.append({"line": line, "reason": "LINE ID 格式不對，已匯入客戶但不會推播（請補正確的群組 ID）"})
                 old = book.get(cid)
                 need = cust["need_card"]
+                sheet_fp = hashlib.sha256(json.dumps(cust, sort_keys=True, ensure_ascii=False).encode()).hexdigest()[:16]
                 if old is None:
                     need.update(version=1, updated_at=ts)
-                    book[cid] = {**cust, "source": "csv", "imported_at": ts, "updated_at": ts}
+                    book[cid] = {**cust, "source": "csv", "imported_at": ts, "updated_at": ts, "sheet_fp": sheet_fp}
                     rep.new_ids.append(cid)
+                elif old.get("sheet_fp") == sheet_fp:
+                    # 試算表這一列跟上次同步一模一樣：保留仲介在 LINE 改過的需求、暫停狀態，不要每天被蓋回去
+                    rep.unchanged_count += 1
                 else:
+                    if "status" not in mp or not str(row.get(mp["status"], "")).strip():
+                        cust["status"] = old.get("status", cust["status"])   # 試算表沒填狀態：沿用 LINE 設的（例：暫停）
                     old_need = {k: v for k, v in (old.get("need_card") or {}).items() if k not in ("version", "updated_at")}
                     need_changed = old_need != need
                     need.update(version=int((old.get("need_card") or {}).get("version", 1)) + (1 if need_changed else 0),
                                 updated_at=ts if need_changed else (old.get("need_card") or {}).get("updated_at", ts))
-                    merged = {**old, **cust, "updated_at": ts}
+                    merged = {**old, **cust, "updated_at": ts, "sheet_fp": sheet_fp}
                     if merged.get("line_target") is None and old.get("line_target"):
                         merged["line_target"] = old["line_target"]      # 新檔沒填，不覆蓋舊的綁定
                     if need_changed or any(old.get(k) != merged.get(k) for k in ("label", "status", "line_target", "members")):
