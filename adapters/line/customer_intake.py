@@ -26,7 +26,7 @@ POLICY_WORDS = {
 RENT_TYPES = ("電梯大樓", "華廈", "公寓", "透天", "套房", "店面", "辦公", "廠房")
 # 常用區間：點的就好（圖卡點選化）；自己打的照樣收
 BUY_BUDGETS = ("500以內", "500-800", "800-1200", "1200-1800", "1800-2500", "2500-3500", "3500-5000", "5000-8000")
-RENT_BUDGETS = ("1萬以內", "1-1.5萬", "1.5-2.5萬", "2.5-4萬", "4-6萬", "6萬以上")
+RENT_BUDGETS = ("1萬以內", "1-1.5萬", "1.5-2.5萬", "2.5-4萬", "4-6萬", "6-10萬")
 SIZES = ("不限", "20以上", "30以上", "40以上", "50以上", "20-35", "35-50", "50-80")
 WHOLE_FLOOR = ("整層", "整層住家", "整層出租", "住家")
 STEPS = ("label", "transaction", "area", "budget", "type", "rooms", "size", "age", "parking", "elevator", "confirm")
@@ -133,6 +133,14 @@ def _count(text, step):
     raise IntakeError("房數請打 0–10、屋齡請打 0–100（例：3、3房、10年），或按不限。")
 
 
+WHOLE_AREA = ("全區", "全部", "全市", "全縣")
+
+
+def _district(county, rest):
+    names = DISTRICTS[county]
+    return rest if rest in names else next((d for d in names if d[:-1] == rest or d.startswith(rest) and len(rest) >= 2), None)
+
+
 def _typed_areas(text):
     """打字的區域要對得上行政區（審查：「台中市西屯」「台中市西屯區 南屯區」以前存成不存在的地區，永遠配不到）。
     可以：台中市西屯區、台中市西屯、台中西屯區、台中市（整個市）、「台中市西屯區 南屯區」（後面沿用同一縣市）。"""
@@ -141,24 +149,23 @@ def _typed_areas(text):
         if not raw:
             continue
         hit = None
-        for c in sorted(COUNTIES, key=len, reverse=True):
-            for prefix in (c, c[:2]):
-                if raw.startswith(prefix):
-                    hit = (c, raw[len(prefix):])
-                    break
-            if hit:
-                break
+        if county and _district(county, raw):                     # 「桃園市中壢區、桃園區」：先當成同一縣市的區
+            hit = (county, raw)
+        if not hit:                                                # 完整縣市名優先（新竹縣不要被「新竹」市搶走）
+            hit = next(((c, raw[len(c):]) for c in sorted(COUNTIES, key=len, reverse=True) if raw.startswith(c)), None)
+        if not hit:                                                # 簡寫「台中西屯」：兩字開頭，挑區名對得上的那個縣市
+            cands = [(c, raw[2:]) for c in COUNTIES if raw.startswith(c[:2])]
+            hit = next((x for x in cands if not x[1] or x[1] in WHOLE_AREA or _district(*x)), cands[0] if cands else None)
         if hit:
             county, rest = hit
         elif county:
             rest = raw
         else:
             raise IntakeError(f"「{raw[:10]}」要加縣市，例：台中市西屯區。")
-        if not rest or rest in ("全區", "全部", "全市", "全縣"):
+        if not rest or rest in WHOLE_AREA:
             out.append(county)
             continue
-        names = DISTRICTS[county]
-        found = rest if rest in names else next((d for d in names if d[:-1] == rest or d.startswith(rest) and len(rest) >= 2), None)
+        found = _district(county, rest)
         if not found:
             raise IntakeError(f"{county}沒有「{rest[:10]}」這個區，請再確認（或點卡片選）。")
         out.append(county + found)
